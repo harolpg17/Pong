@@ -30,7 +30,7 @@ namespace Pong.Bus
             {
                 Thread.Sleep(2000);
                 string response = "PONG_MESSAGE";
-
+                 
                 var body = ea.Body;
                 var props = ea.BasicProperties;
                 var replyProps = channel.CreateBasicProperties();
