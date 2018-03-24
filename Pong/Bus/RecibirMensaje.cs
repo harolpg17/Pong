@@ -19,12 +19,19 @@ namespace Pong.Bus
             var factory = new ConnectionFactory() { HostName = "localhost" };
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
-            channel.QueueDeclare(queue: "rpc_queue", durable: false,
-                exclusive: false, autoDelete: false, arguments: null);
+            channel.QueueDeclare(
+                queue: "PING_PONG", 
+                durable: false,
+                exclusive: false, 
+                autoDelete: false, 
+                arguments: null);
+
             channel.BasicQos(0, 1, false);
             var consumer = new EventingBasicConsumer(channel);
-            channel.BasicConsume(queue: "rpc_queue",
-                autoAck: false, consumer: consumer);
+            channel.BasicConsume(
+                queue: "PING_PONG",
+                autoAck: false, 
+                consumer: consumer);
 
             consumer.Received += (model, ea) =>
             {
@@ -39,9 +46,13 @@ namespace Pong.Bus
                 var message = Encoding.UTF8.GetString(body);
 
                 var responseBytes = Encoding.UTF8.GetBytes(response);
-                channel.BasicPublish(exchange: "", routingKey: props.ReplyTo,
-                    basicProperties: replyProps, body: responseBytes);
-                channel.BasicAck(deliveryTag: ea.DeliveryTag,
+                channel.BasicPublish(
+                    exchange: "", 
+                    routingKey: props.ReplyTo,
+                    basicProperties: replyProps, 
+                    body: responseBytes);
+                channel.BasicAck(
+                    deliveryTag: ea.DeliveryTag,
                     multiple: false);                  
             };
         }
