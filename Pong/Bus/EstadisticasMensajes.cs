@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Pong.Models;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,14 @@ namespace Pong.Bus
             var url = "overview";
             var response = await cliente.GetAsync(url);
 
-            var result = await response.Content.ReadAsStringAsync();
-            var estadisticas = JsonConvert.DeserializeObject<Estadisticas>(result);
+            var resultadoTexto = await response.Content.ReadAsStringAsync();
+            JObject resultado = JObject.Parse(resultadoTexto);
+
+            Estadisticas estadisticas = new Estadisticas
+            {
+                MensajesRecibidos = resultado["message_stats"]["ack"].ToString(),
+                MensajesRespuestos = resultado["message_stats"]["deliver"].ToString()
+            };
 
             return estadisticas;
         }
